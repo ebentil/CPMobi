@@ -87,6 +87,8 @@
 		var id = $('#txtusername').val();
 		var pass = $('#txtpassword').val();
 
+		var login_creds = id+"|"+pass;
+
 		if (id == '' || pass == '') {
 			$("#display").html('All fields required');
 			$("#display").css('color', 'red');
@@ -151,7 +153,14 @@
 		        error : function(){
 		        	
 		        	var stored_creds = localStorage.getItem("creds");
-		        	if(stored_creds == creds){
+
+					var res = stored_creds.split("|");
+					
+		        	var stored_login_creds = res[0]+"|"+res[1];
+
+
+
+		        	if(login_creds == stored_login_creds){
 		        		alert('Offline Mode activated. Payments will be stored temporarily');
 		        		window.location = 'main.html';
 		        	}
