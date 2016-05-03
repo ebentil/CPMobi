@@ -280,18 +280,36 @@
 
 	</body>
 	<script>
+	// $(document).ready(function() {
+	// 	checkStoredPayments();
+	// });
 	function checkStoredPayments(){
 		var no_of_payments = 0;
 		var storedpay = localStorage.getItem("payment");
-		// var storedpayArr = storedpay.split("***");
-		// no_of_payments = storedpayArr.length;
-		no_of_payments = (storedpay.match(/[***]/g) || []).length;
-		// alert(no_of_payments)
-		no_of_payments = parseInt(no_of_payments)
-		$('#sp_no').html(no_of_payments);
+		var storedpayArr = storedpay.split("***");
+		no_of_payments = storedpayArr.length;
+		// no_of_payments = (storedpay.match(/[***]/g) || []).length;
+		// alert(storedpayArr[0]);
+		// console.log(storedpayArr[0]);
 
+		// no_of_payments = parseInt(no_of_payments)
+		// console.log(storedpay[0][0]);
+		if(no_of_payments==1&& storedpay[0]==undefined){
+			// alert(storedpay[0])
+			$('#sp_no').html(0);
+			return 0;
+		}
+		else{
+			$('#sp_no').html(no_of_payments);
+			return no_of_payments;
+		}
+		
+		
 	}
-	checkStoredPayments();
+	
+	window.setInterval(function(){
+	  checkStoredPayments();
+	}, 5000);
 	function makePayment(paymentClient, paymentClientN, paymentAmount,agent){
 		 // $.post("http://wseed.nalosolutions.com/mobileapi/newPayment.php", {
 			// 				paymentClient : paymentClient,
@@ -353,8 +371,9 @@
 		return retur;
 }
 $("#storedPayments").click(function() {
-			$('#spi').removeClass('fa-list-alt');
-			$('#spi').addClass('fa-spinner fa-spin');
+			if(checkStoredPayments()>0){
+				$('#spi').removeClass('fa-list-alt');
+			$('#spi').html('<span style="font-size: 16px;">uploading...</span>');
 			$.ajax({
 		        url : 'http://78.46.254.56/zoom/mobileapi/checkonline.php',
 		        type : 'POST',
@@ -391,7 +410,9 @@ $("#storedPayments").click(function() {
 						alert("Successful transactions: "+success+". Failed transactions: "+error);
 						localStorage.setItem("payment", "");
 						
-						$('#spi').removeClass('fa-spinner fa-spin');
+						checkStoredPayments();
+						// $('#spi').removeClass('fa-spinner fa-spin');
+						$('#spi').html('');
 						$('#spi').addClass('fa-list-alt');
 					}
 					else {
@@ -400,14 +421,17 @@ $("#storedPayments").click(function() {
 					$("#display").css('color', 'red');
 					$("#display").fadeIn();
 					$("#display").fadeOut(8000);
-					$('#spi').removeClass('fa-spinner fa-spin');
+					// $('#spi').removeClass('fa-spinner fa-spin');
+					$('#spi').html('');
 						$('#spi').addClass('fa-list-alt');
+
 					
 					};
 		        },
 		        error : function(){
 		        	alert('Device offline. Please check connection.');
-		        	$('#spi').removeClass('fa-spinner fa-spin');
+		        	// $('#spi').removeClass('fa-spinner fa-spin');
+		        	$('#spi').html('');
 						$('#spi').addClass('fa-list-alt');
 		        	
 		   //      	var oldpay = localStorage.getItem("payment");
@@ -433,6 +457,12 @@ $("#storedPayments").click(function() {
 
 
 		    });
+
+			}
+			else{
+				alert('There are no stored payments.');
+			}
+			
 		});
 
 		//Login Attempt
@@ -601,12 +631,13 @@ $("#storedPayments").click(function() {
 									localStorage.setItem("payment", '***'+store);
 								}
 								var newpay = localStorage.getItem("payment");
-
+								checkStoredPayments();
 								$("#paydisplay").html('Offline Mode. Payment has been stored on device.');
 								$("#paydisplay").css('color', 'red');
 								$("#paydisplay").fadeIn();
 								$("#paydisplay").fadeOut(10000);
 								$("#btnnewPayment").removeAttr('disabled', 'disabled');
+								
 
 							};
 						});
@@ -817,7 +848,7 @@ $("#storedPayments").click(function() {
 			for (var i = 0; i < arrayLength; i++) {
 			    var fetchClient = clnts_arr[i];
 
-			   output += '<li value="'+ fetchClient['client_id']+'" class="clientDetail clientMakePayment" data-value="'+ fetchClient['client_id']+'">';
+			   output += '<li value="'+ fetchClient['client_id']+'" class="clientDetail clientMakePayment" data-collector_id="'+ fetchClient['collector_id']+'" data-name="'+ fetchClient['name']+'" data-value="'+ fetchClient['client_id']+'">';
     output +='<a href="#newPayment" style="text-decoration: none;" value="'+ fetchClient['client_id']+'" > <font color="gray" size="3px">Name:</font>'+ fetchClient['name'];
         output +='<br/>';
         output +='<font color="gray" size="3px">ClientID: </font>'+ fetchClient['client_id'];
@@ -839,13 +870,20 @@ $("#storedPayments").click(function() {
 			$(".clientMakePayment").click(function() {
 				// paID = $(this).value();
 				paID = $(this).data('value');
+				pcname = $(this).data('name');
+				pcollector_id = $(this).data('collector_id');
 				$("#paymentClient").val(paID);
+				$("#paymentClientN").val(pcname);
+				$("#pcollector_id").val(pcollector_id);
 				$.post("http://78.46.254.56/zoom/mobileapi/fetchclient.php", {
 					clientid : paID,
+					collector_id : pcollector_id
 				}, function(data) {
 					$('#paymentClientN').val(data);
 				});
 			});
+
+			checkStoredPayments();
 
     		
 		});
