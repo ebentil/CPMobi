@@ -190,6 +190,7 @@
 		<!-- Start of PAYMENT page I -->
 		<div data-role="page" id="newPayment">
 			<!-- Header -->
+			<!-- <div data-role="header" data-position='fixed' data-add-back-btn="true"> -->
 			<div data-role="header" data-position='fixed' data-add-back-btn="true">
 				<h1>PAYMENT</h1>
 			</div>
@@ -320,7 +321,7 @@
 			// 			}, function(data) {
 				var retur = 0;
 		$.ajax({
-		        url : 'http://78.46.254.56/zoom/mobileapi/newPayment.php',
+		        url : 'http://api.nalosolutions.com/zoom/mobileapi/newPayment.php',
 		        type : 'POST',
 		        data: { 
 		            		paymentClient : paymentClient,
@@ -375,7 +376,7 @@ $("#storedPayments").click(function() {
 				$('#spi').removeClass('fa-list-alt');
 			$('#spi').html('<span style="font-size: 16px;">uploading...</span>');
 			$.ajax({
-		        url : 'http://78.46.254.56/zoom/mobileapi/checkonline.php',
+		        url : 'http://api.nalosolutions.com/zoom/mobileapi/checkonline.php',
 		        type : 'POST',
 		        data: { 
 		            test : 'test'
@@ -489,7 +490,7 @@ $("#storedPayments").click(function() {
 				$("#display").css('color', 'red');
 				$("#display").fadeOut(8000);
 			} else {
-				$.post("http://78.46.254.56/zoom/mobileapi/newClient.php", {
+				$.post("http://api.nalosolutions.com/zoom/mobileapi/newClient.php", {
 					clientName : name,
 					clientGender : gender,
 					clientMobile : mobile,
@@ -541,7 +542,7 @@ $("#storedPayments").click(function() {
 	<script>
 		function fetchuser() {
 			var clientid = $('#paymentClient').val();
-			$.post("http://78.46.254.56/zoom/mobileapi/fetchclient.php", {
+			$.post("http://api.nalosolutions.com/zoom/mobileapi/fetchclient.php", {
 				clientid : clientid,
 			}, function(data) {
 				$('#paymentClientN').val(data);
@@ -594,14 +595,14 @@ $("#storedPayments").click(function() {
 			} else {
 
 				$.ajax({
-		        url : 'http://78.46.254.56/zoom/mobileapi/checkonline.php',
+		        url : 'http://api.nalosolutions.com/zoom/mobileapi/checkonline.php',
 		        type : 'POST',
 		        data: { 
 		            test : 'test'
 		        },
 		        success : function(response,status,xhr) { //run this if check is successful
 		            if (xhr['status']=='200') {	
-		            	$.post("http://78.46.254.56/zoom/mobileapi/newPayment.php", {
+		            	$.post("http://api.nalosolutions.com/zoom/mobileapi/newPayment.php", {
 							paymentClient : paymentClient,
 							paymentClientN : paymentClientN,
 							paymentType : paymentType,
@@ -875,7 +876,7 @@ $("#storedPayments").click(function() {
 				$("#paymentClient").val(paID);
 				$("#paymentClientN").val(pcname);
 				$("#pcollector_id").val(pcollector_id);
-				$.post("http://78.46.254.56/zoom/mobileapi/fetchclient.php", {
+				$.post("http://api.nalosolutions.com/zoom/mobileapi/fetchclient.php", {
 					clientid : paID,
 					collector_id : pcollector_id
 				}, function(data) {
