@@ -202,7 +202,7 @@
 					font-weight:bolder;width:83%;position: absolute;top: 45%; left:0px;margin: 5%;z-index: 80px;display:none;border:1px solid gray;"></div>
 					<!-- <form action="" method="post"> -->
 					<label for="paymentClient" style="text-align: center">Client ID</label>
-					<input type="text" name="paymentClient" onkeyup="fetchuser()" value="" id="paymentClient"  placeholder="ZL0000000"/>
+					<input type="text" name="paymentClient" onkeyup="fetchuser()" value="" id="paymentClient"  placeholder="eg. ZL1234578"/>
  
 					<label for="mobile" style="text-align: center">Client Name</label>
 					<input type="text" name="paymentClientN" value="" disabled='disabled'  id="paymentClientN" data-mini='true'  />
@@ -211,15 +211,52 @@
 					<select name="paymentType" id="paymentType" data-mini='true' >
 						<option value="Cash">Cash</option>
 						<option value="Cheque">Cheque</option>
-						<option value="Mobilemoney">Mobilemoney</option>
+						<option value="MobileMoney">MobileMoney</option>
 					</select>
 
 					<input type="text" name="chequeNumber" value="" class="extrafield" placeholder="Cheque Number" id="chequeNumber" data-mini='true'  style="display: none;" />
 
 					<input type="text" name="MobilemoneyNumber" class="extrafield" value="" placeholder="Mobilemoney Number" id="MobilemoneyNumber" data-mini='true'  style="display: none;" />
 
+					<label for="service" style="text-align: center">Service</label>
+					<select name="service" id="service" data-mini='true' >
+						<option value="Cash">Door-to-door</option>
+					</select>
+
+					<label for="service" style="text-align: center">Month</label>
+					<select name="paymonth" id="paymonth" data-mini='true' >
+						<option>January</option>
+						<option>February</option>
+						<option>March</option>
+						<option>April</option>
+						<option>May</option>
+						<option>June</option>
+						<option>July</option>
+						<option>August</option>
+						<option>September</option>
+						<option>October</option>
+						<option>November</option>
+						<option>December</option>
+					</select>
+
+					<label for="service" style="text-align: center">Year</label>
+					<select name="payyear" id="payyear" data-mini='true' >
+						<option>2015</option>
+						<option selected="selected">2016</option>
+						<option>2017</option>
+						<option>2018</option>
+						<option>2019</option>
+						<option>2020</option>
+						<option>2021</option>
+						<option>2022</option>
+						<option>2023</option>
+						<option>2024</option>
+						<option>2025</option>
+						<option>2026</option>
+					</select>
+
 					<label for="paymentAmount" style="text-align: center">Amount GHs</label>
-					<input type="text" name="paymentAmount" value="" id="paymentAmount" data-mini='true'  placeholder="100000"/>
+					<input type="text" name="paymentAmount" value="" id="paymentAmount" data-mini='true'  placeholder="eg. 200"/>
 
 					
 
@@ -559,6 +596,9 @@ $("#storedPayments").click(function() {
 			var paymentClientN = $('#paymentClientN').val();
 			var paymentType = $('#paymentType').val();
 			var paymentAmount = $('#paymentAmount').val();
+			var service = $('#service').val();
+			var paymonth = $('#paymonth').val();
+			var payyear = $('#payyear').val();
 
 			//fetch user details
 			var creds = localStorage.getItem("creds");
@@ -584,7 +624,7 @@ $("#storedPayments").click(function() {
 		    var datetime = dte+' '+time;
 
 			//put payment in string for storage if offline
-			var store = paymentClient+'|'+paymentClientN+'|'+paymentAmount+'|'+agent+'|'+datetime+'|'+paymentType;
+			var store = paymentClient+'|'+paymentClientN+'|'+paymentAmount+'|'+agent+'|'+datetime+'|'+paymentType+'|'+service+'|'+paymonth+'|'+payyear;
 			// var paystring = store+'***'; 
 
 			//check of fields are not empty
@@ -607,6 +647,9 @@ $("#storedPayments").click(function() {
 							paymentClientN : paymentClientN,
 							paymentType : paymentType,
 							paymentAmount : paymentAmount,
+							service : service,
+							paymonth : paymonth,
+							payyear : payyear,
 							agent : agent,
 						}, function(data) {
 							if (data == '1') {
@@ -836,37 +879,40 @@ $("#storedPayments").click(function() {
 			$('#receivedBy').val(agent);
 			$('#agentN').val(agent);
 
-
-
+			//###fetch clients
 			var clnts_json = localStorage.getItem("clnts");
 			clnts_json = JSON.parse(clnts_json);
 			var clnts_arr  = $.map(clnts_json, function(el) { return el; })
-
 			var output = "";
-
 			// console.log(clnts_arr)
 			var arrayLength = clnts_arr.length;
 			for (var i = 0; i < arrayLength; i++) {
 			    var fetchClient = clnts_arr[i];
 
 			   output += '<li value="'+ fetchClient['client_id']+'" class="clientDetail clientMakePayment" data-collector_id="'+ fetchClient['collector_id']+'" data-name="'+ fetchClient['name']+'" data-value="'+ fetchClient['client_id']+'">';
-    output +='<a href="#newPayment" style="text-decoration: none;" value="'+ fetchClient['client_id']+'" > <font color="gray" size="3px">Name:</font>'+ fetchClient['name'];
-        output +='<br/>';
-        output +='<font color="gray" size="3px">ClientID: </font>'+ fetchClient['client_id'];
-        output +='<br/>';
-        output +='<font color="gray" size="3px">Mobile Num: </font>'+ fetchClient['mobile']+'</a>';
-    output +='</li>';
-
-
-
-
-
-			
+			    output +='<a href="#newPayment" style="text-decoration: none;" value="'+ fetchClient['client_id']+'" > <font color="gray" size="3px">Name:</font>'+ fetchClient['name'];
+			        output +='<br/>';
+			        output +='<font color="gray" size="3px">ClientID: </font>'+ fetchClient['client_id'];
+			        output +='<br/>';
+			        output +='<font color="gray" size="3px">Mobile Num: </font>'+ fetchClient['mobile']+'</a>';
+			    output +='</li>';
 			    
 			}
 			// console.log(output);
-
 			$('#wrpPending').html(output);
+
+
+			//####fetch services
+			var services_json = localStorage.getItem("services");
+			services_json = JSON.parse(services_json);
+			var services_arr  = $.map(services_json, function(el) { return el; })
+			var output = "";
+			$('#service').html('');
+			// console.log(clnts_arr)
+			var arrayLength = services_arr.length;
+			for (var j = 0; j < arrayLength; j++) {
+				$('#service').append($("<option></option>").text(services_arr[j])); 
+			}
 
 			$(".clientMakePayment").click(function() {
 				// paID = $(this).value();

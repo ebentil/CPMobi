@@ -97,7 +97,7 @@
 
 			
 			$.ajax({
-		        url : 'http://78.46.254.56/zoom/mobileapi/checkonline.php',
+		        url : 'http://api.nalosolutions.com/zoom/mobileapi/checkonline.php',
 		        type : 'POST',
 		        data: { 
 		            username : id,
@@ -106,7 +106,7 @@
 		        success : function(response,status,xhr) {
 		            if (response) {
 						$("#display").hide();
-						$.post("http://78.46.254.56/zoom/mobileapi/loginval.php", {
+						$.post("http://api.nalosolutions.com/zoom/mobileapi/loginval.php", {
 							username : id,
 							pass : pass
 						}, function(data) {
@@ -116,16 +116,36 @@
 								var creds = id+'|'+pass+'|'+collector_id;
 								localStorage.setItem("creds", creds);
 
-								$.post("http://78.46.254.56/zoom/mobileapi/getClients.php", {
+								///fetch client list
+								$.post("http://api.nalosolutions.com/zoom/mobileapi/getClients.php", {
 									collector_id : collector_id,
 								}, function(data) {
 									if (data) {
 										// console.log(data);
-										$("#display").html('Importing clients...');
+										$("#display").html('Importing your clients...');
 										localStorage.setItem("clnts", data);
 										window.location = 'main.html';
 									} else {
 										$("#display").html('Client data import failed');
+										$("#display").css('color', 'red');
+										$("#display").fadeIn();
+										$("#display").fadeOut(8000);
+									};
+								});
+
+								///fetch list of services for dropdown
+								var valz = creds.split("|");
+								var ho_id = valz[3];
+								$.post("http://api.nalosolutions.com/zoom/mobileapi/getServices.php", {
+									ho_id : ho_id,
+								}, function(data) {
+									if (data) {
+										// console.log(data);
+										$("#display").html('Importing your services...');
+										localStorage.setItem("services", data);
+										window.location = 'main.html';
+									} else {
+										$("#display").html('Service data import failed');
 										$("#display").css('color', 'red');
 										$("#display").fadeIn();
 										$("#display").fadeOut(8000);
